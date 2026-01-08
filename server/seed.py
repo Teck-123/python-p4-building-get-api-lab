@@ -1,25 +1,27 @@
-#!/usr/bin/env python3
-
-from random import choice as rc
-
 from app import app
 from models import db, Bakery, BakedGood
 
 with app.app_context():
-
-    BakedGood.query.delete()
-    Bakery.query.delete()
+    db.drop_all()
+    db.create_all()
     
-    bakeries = []
-    bakeries.append(Bakery(name='Delightful donuts'));
-    bakeries.append(Bakery(name='Incredible crullers'));
-    db.session.add_all(bakeries)
-
-    baked_goods = []
-    baked_goods.append(BakedGood(name='Chocolate dipped donut', price=2.75, bakery=bakeries[0]));
-    baked_goods.append(BakedGood(name='Apple-spice filled donut', price=3.50, bakery=bakeries[0]));
-    baked_goods.append(BakedGood(name='Glazed honey cruller', price=3.25, bakery=bakeries[1]));
-    baked_goods.append(BakedGood(name='Chocolate cruller', price=3.40, bakery=bakeries[1]));
-
-    db.session.add_all(baked_goods)
+    # Create bakeries
+    delightful_donuts = Bakery(name="Delightful donuts")
+    incredible_crullers = Bakery(name="Incredible crullers")
+    
+    db.session.add_all([delightful_donuts, incredible_crullers])
     db.session.commit()
+    
+    # Create baked goods for Delightful donuts
+    chocolate_donut = BakedGood(name="Chocolate dipped donut", price=2.75, bakery_id=delightful_donuts.id)
+    apple_donut = BakedGood(name="Apple-spice filled donut", price=3.5, bakery_id=delightful_donuts.id)
+    
+    # Create baked goods for Incredible crullers
+    honey_cruller = BakedGood(name="Glazed honey cruller", price=3.25, bakery_id=incredible_crullers.id)
+    chocolate_cruller = BakedGood(name="Chocolate cruller", price=3.4, bakery_id=incredible_crullers.id)
+    
+    db.session.add_all([chocolate_donut, apple_donut, honey_cruller, chocolate_cruller])
+    db.session.commit()
+    
+    print("Database seeded successfully!")
+
